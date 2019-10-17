@@ -1,3 +1,5 @@
+import convertToAmp from './src/plugins/convertToAmp'
+
 export default {
   mode: 'spa',
   /*
@@ -14,7 +16,11 @@ export default {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [
+      { rel: 'canonical', href: '/' },
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'amphtml', href: '/amp' }
+    ]
   },
   /*
    ** Customize the progress-bar color
@@ -23,7 +29,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['~/assets/styles/common.scss'],
   /*
    ** Plugins to load before mounting the App
    */
@@ -47,5 +53,17 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
+  },
+  hooks: {
+    'generate:page': (page) => {
+      if (page.route === '/amp') {
+        page.html = convertToAmp(page.html)
+      }
+    },
+    'render:route': (url, page, { req, res }) => {
+      if (page.route === '/amp') {
+        page.html = convertToAmp(page.html)
+      }
+    }
   }
 }
